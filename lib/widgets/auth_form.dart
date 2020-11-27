@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// tipos
+import '../models/auth_data.dart';
+
 class AuthForm extends StatefulWidget {
   @override
   _AuthFormState createState() => _AuthFormState();
@@ -14,6 +17,19 @@ class _AuthFormState extends State<AuthForm> {
     });
   }
 
+  final AuthData _authData = new AuthData();
+
+  // Chave da válidação do formulário
+  final GlobalKey<FormState> _formKey = GlobalKey();
+
+  _submit() {
+    bool isValid = _formKey.currentState.validate();
+    // Fecha o teclado
+    FocusScope.of(context).unfocus();
+
+    if (isValid) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -23,22 +39,42 @@ class _AuthFormState extends State<AuthForm> {
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Form(
+              key: _formKey, //vinculação da chave de válidação.
               child: Column(
                 children: <Widget>[
-                  TextFormField(
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: 'Nome',
+                  if (_authData.isSignup)
+                    TextFormField(
+                      key: ValueKey('name'),
+                      // Faz permanecer o nome já adicionado.
+                      initialValue: _authData.name,
+                      decoration: InputDecoration(
+                        labelText: 'Nome',
+                      ),
+                      textInputAction: TextInputAction.next,
+                      onChanged: (value) => _authData.name = value,
+                      validator: (value) {
+                        if (value == null || value.trim().length < 4) {
+                          return 'Nome deve ter no mínimo 4 caracteres.';
+                        }
+                        return null;
+                      },
                     ),
-                  ),
                   TextFormField(
-                    textInputAction: TextInputAction.next,
+                    key: ValueKey('email'),
                     decoration: InputDecoration(
                       labelText: 'Email',
                     ),
+                    textInputAction: TextInputAction.next,
+                    onChanged: (value) => _authData.email = value,
+                    validator: (value) {
+                      if (value == null || !value.contains('@')) {
+                        return 'Forneça um e-mail válido.';
+                      }
+                      return null;
+                    },
                   ),
                   TextFormField(
-                    obscureText: _isObscure,
+                    key: ValueKey('password'),
                     decoration: InputDecoration(
                       labelText: 'Senha',
                       suffixIcon: IconButton(
@@ -48,15 +84,30 @@ class _AuthFormState extends State<AuthForm> {
                         onPressed: _swichObscure,
                       ),
                     ),
+                    obscureText: _isObscure,
+                    onChanged: (value) => _authData.password = value,
+                    validator: (value) {
+                      if (value == null || value.trim().length < 7) {
+                        return 'Senha deve ter no mínimo 7 caracteres.';
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: 12),
                   RaisedButton(
-                    child: Text('ENTRAR'),
-                    onPressed: () {},
+                    child: Text(_authData.islogin ? 'ENTRAR' : 'CADASTRAR'),
+                    onPressed: _submit,
                   ),
                   FlatButton(
-                    child: Text('Criar um nova conta?'),
-                    onPressed: () {},
+                    child: Text(_authData.islogin
+                    ? 'Criar um nova conta?'
+                    : 'Já possui uma conta?'),
+                    textColor: Theme.of(context).primaryColor,
+                    onPressed: () {
+                      setState(() {
+                        _authData.toggleMode();
+                      });
+                    },
                   ),
                 ],
               ),
