@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import '../models/auth_data.dart';
 
 class AuthForm extends StatefulWidget {
+  final void Function(AuthData authData) onSubmit;
+
+  AuthForm(this.onSubmit);
+
   @override
   _AuthFormState createState() => _AuthFormState();
 }
@@ -27,7 +31,9 @@ class _AuthFormState extends State<AuthForm> {
     // Fecha o teclado
     FocusScope.of(context).unfocus();
 
-    if (isValid) {}
+    if (isValid) {
+      widget.onSubmit(_authData);
+    }
   }
 
   @override
@@ -92,6 +98,7 @@ class _AuthFormState extends State<AuthForm> {
                       }
                       return null;
                     },
+                    onFieldSubmitted: (_) => _submit
                   ),
                   SizedBox(height: 12),
                   RaisedButton(
@@ -100,8 +107,8 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   FlatButton(
                     child: Text(_authData.islogin
-                    ? 'Criar um nova conta?'
-                    : 'Já possui uma conta?'),
+                        ? 'Criar um nova conta?'
+                        : 'Já possui uma conta?'),
                     textColor: Theme.of(context).primaryColor,
                     onPressed: () {
                       setState(() {
