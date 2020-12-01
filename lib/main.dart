@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 // Firebase
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // Screens
-// import './screens/chat_screen.dart';
+import './screens/chat_screen.dart';
 import './screens/auth_screen.dart';
 
 void main() {
@@ -38,7 +39,17 @@ class MyApp extends StatelessWidget {
             ),
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: AuthScreen(),
+          home: StreamBuilder(
+            // Faz a troca de tela, quando as credenciais estão válidas.
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (ctx, userSnapshot) {
+              if (userSnapshot.hasData) {
+                return ChatScreen();
+              } else {
+                return AuthScreen();
+              }
+            },
+          ),
         );
       },
     );
