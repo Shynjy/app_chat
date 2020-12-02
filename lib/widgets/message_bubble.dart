@@ -1,33 +1,82 @@
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
+  final Key key;
+  final String userName;
+  final String userImage;
   final String message;
+  final bool belongsToMe;
 
-  const MessageBubble(this.message);
+  MessageBubble(
+    this.message,
+    this.userName,
+    this.userImage,
+    this.belongsToMe, {
+    this.key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).accentColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 16,
-          ),
-          margin: EdgeInsets.symmetric(
-            vertical: 4,
-            // horizontal: 8,
-          ),
-          child: Text(message,
-            style: TextStyle(
-              color: Theme.of(context).accentTextTheme.headline1.color,
+    return Stack(
+      children: [
+        Row(
+          mainAxisAlignment:
+              belongsToMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                color:
+                    belongsToMe ? Colors.teal : Theme.of(context).accentColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  topRight: Radius.circular(12),
+                  bottomLeft:
+                      belongsToMe ? Radius.circular(12) : Radius.circular(0),
+                  bottomRight:
+                      belongsToMe ? Radius.circular(0) : Radius.circular(12),
+                ),
+              ),
+              width: 140,
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 16,
+              ),
+              margin: EdgeInsets.symmetric(
+                vertical: 12,
+                // horizontal: 8,
+              ),
+              child: Column(
+                crossAxisAlignment: belongsToMe
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    userName,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).accentTextTheme.headline1.color),
+                  ),
+                  Text(
+                    message,
+                    style: TextStyle(
+                      color: Theme.of(context).accentTextTheme.headline1.color,
+                    ),
+                    textAlign: belongsToMe ? TextAlign.end : TextAlign.start,
+                  ),
+                ],
+              ),
             ),
+          ],
+        ),
+        Positioned(
+          top: 0,
+          left: belongsToMe ? null : 128,
+          right: belongsToMe ? 128 : null,
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(this.userImage),
           ),
-        )
+        ),
       ],
     );
   }
