@@ -30,6 +30,9 @@ class _NewMessageState extends State<NewMessage> {
     });
 
     _controller.clear();
+    setState(() {
+      _enteredMessage = '';
+    });
   }
 
   @override
@@ -40,6 +43,9 @@ class _NewMessageState extends State<NewMessage> {
           Expanded(
             child: TextField(
               controller: _controller,
+              minLines: 1,
+              maxLines: 3,
+              keyboardType: TextInputType.multiline,
               decoration: InputDecoration(
                 labelText: 'Enviar mensagem...',
                 suffixIcon: IconButton(

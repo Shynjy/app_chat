@@ -71,8 +71,8 @@ class MessageBubble extends StatelessWidget {
         ),
         Positioned(
           top: 0,
-          left: belongsToMe ? null : 128,
-          right: belongsToMe ? 128 : null,
+          left: belongsToMe ? null : 120,
+          right: belongsToMe ? 120 : null,
           child: CircleAvatar(
             backgroundImage: NetworkImage(this.userImage),
           ),

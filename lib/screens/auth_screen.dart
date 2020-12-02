@@ -21,7 +21,6 @@ class _AuthScreenState extends State<AuthScreen> {
       _isLoading = true;
     });
 
-    // ATENÇÃO: Nova versão!
     UserCredential authResult;
 
     try {
@@ -36,12 +35,14 @@ class _AuthScreenState extends State<AuthScreen> {
           password: authData.password,
         );
 
+        // Salvo o arquivo no firestore
         final ref = FirebaseStorage.instance
-            .ref()
-            .child('user_images')
-            .child(authResult.user.uid + '.jpg');
+            .ref() // bucket padrão
+            .child('user_images') // Nome do folder
+            .child(authResult.user.uid + '.jpg'); // nome do arquivo
 
-        await ref.putFile(authData.image).onComplete;
+        await ref.putFile(authData.image);
+        
         final url = await ref.getDownloadURL();
 
         final userData = {
@@ -50,7 +51,6 @@ class _AuthScreenState extends State<AuthScreen> {
           'imageUrl': url,
         };
 
-        // ATENÇÃO: Nova versão!
         await FirebaseFirestore.instance
             .collection('users')
             .doc(authResult.user.uid)

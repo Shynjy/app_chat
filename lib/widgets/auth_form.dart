@@ -40,6 +40,13 @@ class _AuthFormState extends State<AuthForm> {
     _authData.image = image;
   }
 
+  bool _isObscure = true;
+  void changeObscure() {
+    setState(() {
+      _isObscure = !_isObscure;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -83,10 +90,13 @@ class _AuthFormState extends State<AuthForm> {
                   ),
                   TextFormField(
                     key: ValueKey('password'),
-                    obscureText: true,
+                    obscureText: _isObscure,
                     decoration: InputDecoration(
-                      labelText: 'Senha',
-                    ),
+                        labelText: 'Senha',
+                        suffixIcon: IconButton(
+                          icon: _isObscure ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
+                          onPressed: changeObscure,
+                        )),
                     onChanged: (value) => _authData.password = value,
                     validator: (value) {
                       if (value == null || value.trim().length < 7) {
