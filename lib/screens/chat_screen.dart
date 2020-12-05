@@ -1,14 +1,41 @@
-import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
-class ChatScreen extends StatelessWidget {
+// Widgets
+import '../widgets/messages.dart';
+import '../widgets/new_message.dart';
+
+class ChatScreen extends StatefulWidget {
+  @override
+  _ChatScreenState createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    final fbm = FirebaseMessaging();
+    fbm.configure(onMessage: (msg) {
+      print('onMessage...');
+      print(msg);
+      return;
+    }, onResume: (msg) {
+      print('onResume...');
+      print(msg);
+      return;
+    }, onLaunch: (msg) {
+      return;
+    });
+    fbm.requestNotificationPermissions();
+  }
+
   @override
   Widget build(BuildContext context) {
-    // final User user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
-        title: Text('App Chat'),
+        title: Text('Flutter Chat'),
         actions: <Widget>[
           DropdownButtonHideUnderline(
             child: DropdownButton(
@@ -39,39 +66,16 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: StreamBuilder<Object>(
-        stream: FirebaseFirestore.instance
-            .collection('chat')
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            // var documents = snapshot.data.documents;
-            return ListView.builder(
-              itemCount: 10,
-              itemBuilder: (ctx, index) => Container(
-                  // child: Text(documents[index].get('text')),
-                  ),
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          FirebaseFirestore.instance
-              .collection('chat')
-              .snapshots()
-              .listen((querySnapshot) {
-            querySnapshot.docs.forEach((element) {
-              print(element.get('text'));
-            });
-          });
-        },
+      body: SafeArea(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            children: <Widget>[
+              Expanded(child: Messages()),
+              NewMessage(),
+            ],
+          ),
+        ),
       ),
     );
   }
